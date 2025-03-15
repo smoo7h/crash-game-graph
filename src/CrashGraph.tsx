@@ -357,7 +357,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
 
     // Draw the current multiplier label
     ctx.font = "bold 50px sans-serif";
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#FF6EC7"; // Florescent pink
     const labelText = this.engine.multiplier.toFixed(2) + "x";
     const textSize = ctx.measureText(labelText);
     ctx.fillText(
@@ -368,8 +368,8 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     );
 
     ctx.font = "10px sans-serif";
-    ctx.fillStyle = "#222";
-    ctx.strokeStyle = "#777";
+    ctx.fillStyle = "#FF6EC7";
+    // ctx.strokeStyle = "#777";
 
     // Draw Y-axis with ticks and labels
     const yStepOffset = this.stepValues(this.engine.multiplier || 1);
@@ -410,7 +410,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       const positionY = this.engine.plotHeight + 10;
 
       // Draw tick
-      ctx.strokeStyle = "#444";
+      ctx.strokeStyle = "#FF6EC7";
       ctx.lineWidth = this.xTickWidth;
       ctx.beginPath();
       ctx.moveTo(positionX, positionY - this.xTickWidth / 2);
@@ -421,7 +421,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       // Draw label
       const xLabelText = seconds.toFixed(0) + "s";
       const xTextSize = ctx.measureText(xLabelText);
-      ctx.fillText(xLabelText, positionX - xTextSize.width / 2, positionY + 15);
+      // ctx.fillText(xLabelText, positionX - xTextSize.width / 2, positionY + 15);
     }
 
     this.timer = requestAnimationFrame(() => this.tick()) as any as number;
