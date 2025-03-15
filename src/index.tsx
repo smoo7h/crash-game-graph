@@ -13,7 +13,7 @@ const App = () => (
         crashPoint={2.0} 
         width={400} 
         height={400}
-      
+        overlayColor="rgba(0, 0, 0, 0.2)"  // Light overlay
         players={[
           { name: "Alice", crashPoint: 1.3 },
           { name: "Bob", crashPoint: 1.8 },
@@ -26,6 +26,7 @@ const App = () => (
       crashPoint={5.0} 
       width={400} 
       height={400}
+      overlayColor="rgba(0, 0, 0, 0.4)"  // Medium overlay
       players={[
         { name: "David", crashPoint: 1.5 },
         { name: "Eva", crashPoint: 2.4 },
@@ -38,6 +39,7 @@ const App = () => (
       crashPoint={100} 
       width={400} 
       height={400}
+      overlayColor="rgba(0, 0, 0, 0.6)"  // Dark overlay
       players={[
         { name: "Henry", crashPoint: 2.1 },
         { name: "Ivy", crashPoint: 4.3 },

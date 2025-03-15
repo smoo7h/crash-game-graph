@@ -11,6 +11,7 @@ interface CrashGraphProps {
   width?: number;     // Canvas width (default: 600)
   height?: number;    // Canvas height (default: 400)
   players?: PlayerData[]; // Array of players with their crash points
+  overlayColor?: string; // Color of the semi-transparent overlay (default: rgba(0, 0, 0, 0.3))
 }
 
 export class CrashGraph extends React.Component<CrashGraphProps> {
@@ -18,9 +19,13 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private engine: CrashEngine = new CrashEngine();
   private timer?: number;
   private isComponentMounted = false;
-  private yTickWidth = 2;
   private xTickWidth = 2;
   
+  // Car image properties
+  // Background image properties
+  private backgroundImage = new Image();
+  private backgroundLoaded = false;
+
   // Car image properties
   private carImage = new Image();
   private carLoaded = false;
@@ -48,8 +53,13 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     this.isComponentMounted = true;
     const canvas = this.canvasReference.current;
     if (!canvas) return;
+
+    // Load background image
+    this.backgroundImage.src = `/assets/background_1.png`;
+    this.backgroundImage.onload = () => {
+      this.backgroundLoaded = true;
+    };
     
-   
     this.carImage.src = `/assets/tonicar.png`;
     this.carImage.onload = () => {
       this.carLoaded = true;
@@ -121,6 +131,23 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     if (!ctx) return;
 
     ctx.clearRect(0, 0, this.engine.graphWidth, this.engine.graphHeight);
+
+    // Draw background image
+    if (this.backgroundLoaded) {
+      const scale = canvas.height / this.backgroundImage.height;
+      const scaledWidth = this.backgroundImage.width * scale;
+      const xOffset = (canvas.width - scaledWidth) / 2;
+      
+      ctx.drawImage(
+        this.backgroundImage,
+        xOffset, 0,
+        scaledWidth, canvas.height
+      );
+
+      // Draw semi-transparent overlay
+      ctx.fillStyle = this.props.overlayColor || 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     // Draw the multiplier curve
     ctx.beginPath();
@@ -384,7 +411,6 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     const { width = 600, height = 400 } = this.props;
     return (
       <canvas
-        style={{ background: "#e2e2e2" }}
         ref={this.canvasReference}
         width={width}
         height={height}
