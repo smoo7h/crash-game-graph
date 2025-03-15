@@ -8,17 +8,19 @@ const App = () => (
    
     {/* Example with players */}
     <h2>Crash Graphs with Players</h2>
-    <CrashGraph 
-      crashPoint={2.0} 
-      width={400} 
-      height={400}
-     
-      players={[
-        { name: "Alice", crashPoint: 1.3 },
-        { name: "Bob", crashPoint: 1.8 },
-        { name: "Charlie", crashPoint: 2.2 } // This won't show (exceeds game's crash point)
-      ]}
-    />
+
+      <CrashGraph 
+        crashPoint={2.0} 
+        width={400} 
+        height={400}
+      
+        players={[
+          { name: "Alice", crashPoint: 1.3 },
+          { name: "Bob", crashPoint: 1.8 },
+          { name: "Charlie", crashPoint: 2.2 } // This won't show (exceeds game's crash point)
+        ]}
+      />
+
     
     <CrashGraph 
       crashPoint={5.0} 
@@ -33,14 +35,15 @@ const App = () => (
     />
     
     <CrashGraph 
-      crashPoint={10.0} 
+      crashPoint={100} 
       width={400} 
       height={400}
       players={[
         { name: "Henry", crashPoint: 2.1 },
         { name: "Ivy", crashPoint: 4.3 },
-        { name: "Jack", crashPoint: 6.8 },
-        { name: "Kate", crashPoint: 9.2 }
+        { name: "Rise", crashPoint: 2 },
+        { name: "Jack", crashPoint: 69.8 },
+        { name: "Kate", crashPoint: 92.2 }
       ]}
     />
   </div>

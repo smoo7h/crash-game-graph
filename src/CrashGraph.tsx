@@ -30,6 +30,13 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private carWidth = this.originalCarWidth * this.carScale;
   private carHeight = this.originalCarHeight * this.carScale;
   
+  // Police car properties
+  private policeImage = new Image();
+  private policeLoaded = false;
+  private policeVisible = false;
+  private policeTimer: number | null = null;
+  private positionHistory: Array<{time: number, x: number, y: number, angle: number}> = [];
+  
   // Player cars
   private playerCars: Map<string, { image: HTMLImageElement, loaded: boolean }> = new Map();
   
@@ -51,6 +58,17 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       this.carWidth = this.originalCarWidth * this.carScale;
       this.carHeight = this.originalCarHeight * this.carScale;
     };
+    
+    // Load police car image
+    this.policeImage.src = "/assets/police.png";
+    this.policeImage.onload = () => {
+      this.policeLoaded = true;
+    };
+    
+    // Set timer to show police car after 1 second
+    this.policeTimer = window.setTimeout(() => {
+      this.policeVisible = true;
+    }, 1000);
     
     // Load player car images
     if (this.props.players && this.props.players.length > 0) {
@@ -87,6 +105,9 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     this.isComponentMounted = false;
     if (this.timer) {
       cancelAnimationFrame(this.timer);
+    }
+    if (this.policeTimer) {
+      clearTimeout(this.policeTimer);
     }
     this.engine.destroy();
   }
@@ -128,6 +149,19 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         angle = angle - angleAdjustment;
       }
      
+      // Save the position for police car history
+      this.positionHistory.push({
+        time: this.engine.elapsedTime,
+        x: currentPoint.x,
+        y: currentPoint.y,
+        angle: angle
+      });
+      
+      // Limit history size to prevent memory issues
+      if (this.positionHistory.length > 1000) {
+        this.positionHistory.shift();
+      }
+      
       // Save current canvas state
       ctx.save();
       
@@ -148,6 +182,74 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       
       // Restore canvas state
       ctx.restore();
+    }
+    
+    // Draw police car
+    if (this.policeLoaded && this.policeVisible) {
+      // Calculate police car position using exact same positions as main car but 1 second behind
+      const policeElapsedTime = Math.max(0, this.engine.elapsedTime - 1000);
+      
+      // Get the position directly from the engine, just like we do for the main car
+      // This ensures the exact same trajectory calculation logic is used
+      const policePosition = this.engine.getElapsedPosition(policeElapsedTime);
+      
+      // Calculate the angle using the same logic as the main car
+      let policeAngle = -Math.PI / 4;
+      
+      if (policePosition.x >= this.angleCutOff) {
+        const angleAdjustment = (this.angleCalcConstant - policePosition.y) / 333;
+        policeAngle = policeAngle - angleAdjustment;
+      }
+      
+      // If game is over, police continues using the engine's position calculation
+      if (this.engine.state === CrashEngineState.Over) {
+        const timeSinceGameOver = Date.now() - (this.engine.startTime + this.engine.finalElapsed);
+        const policeTimeAfterCrash = Math.max(0, policeElapsedTime + timeSinceGameOver);
+        
+        // Only update position if police hasn't reached the crash point yet
+        if (policeTimeAfterCrash < this.engine.finalElapsed) {
+          // The police is still approaching the crash point
+          const policeCatchUpPosition = this.engine.getElapsedPosition(policeTimeAfterCrash);
+          
+          // Draw police car at calculated position
+          ctx.save();
+          ctx.translate(policeCatchUpPosition.x, policeCatchUpPosition.y);
+          
+          // Calculate angle
+          let catchUpAngle = -Math.PI / 4;
+          if (policeCatchUpPosition.x >= this.angleCutOff) {
+            const angleAdjustment = (this.angleCalcConstant - policeCatchUpPosition.y) / 333;
+            catchUpAngle = catchUpAngle - angleAdjustment;
+          }
+          
+          ctx.rotate(catchUpAngle);
+          
+          ctx.drawImage(
+            this.policeImage,
+            -this.carWidth / 2,
+            -this.carHeight / 2,
+            this.carWidth,
+            this.carHeight
+          );
+          
+          ctx.restore();
+        }
+      } else {
+        // Normal gameplay - draw police car at calculated position
+        ctx.save();
+        ctx.translate(policePosition.x, policePosition.y);
+        ctx.rotate(policeAngle);
+        
+        ctx.drawImage(
+          this.policeImage,
+          -this.carWidth / 2,
+          -this.carHeight / 2,
+          this.carWidth,
+          this.carHeight
+        );
+        
+        ctx.restore();
+      }
     }
     
     // Draw player cars and names at their crash points
