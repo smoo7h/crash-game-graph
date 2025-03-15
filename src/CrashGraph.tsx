@@ -46,10 +46,10 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private playerCars: Map<string, { image: HTMLImageElement, loaded: boolean }> = new Map();
   
   // Car rotation constants
-  private readonly angleCutOff = 350;
-  private readonly angleCalcConstant = 145;
+  private readonly angleCutOff = 300;
+  private readonly angleCalcConstant = 150;
   private lastMainCarAngle = -Math.PI / 4; // Track previous angle for smoothing
-  private readonly angleSmoothingFactor = 0.13333; // Higher = smoother (0.0-1.0)
+  private readonly angleSmoothingFactor = 0.3; // Higher = smoother (0.0-1.0)
 
   public componentDidMount() {
     this.isComponentMounted = true;
@@ -165,18 +165,9 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     ctx.quadraticCurveTo(b.x, b.y, a.x, a.y);
     ctx.stroke();
     
-    // Calculate main car position and angle
-    let mainCarAngle = -Math.PI / 4;
+    // Calculate main car angle
     const currentPoint = a;
-    
-    if(currentPoint.x >= this.angleCutOff) {
-      const angleAdjustment = (this.angleCalcConstant - currentPoint.y) / 333;
-      const calculatedAngle = mainCarAngle - angleAdjustment;
-      
-      // Apply smoothing to prevent jiggling at higher multipliers
-      mainCarAngle = this.lastMainCarAngle * this.angleSmoothingFactor + 
-                     calculatedAngle * (1 - this.angleSmoothingFactor);
-    }
+    const mainCarAngle = this.calculateCarAngle(currentPoint);
     
     // Store current angle for next frame
     this.lastMainCarAngle = mainCarAngle;
@@ -195,11 +186,14 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         
         const policeCatchUpPosition = this.engine.getElapsedPosition(targetTime);
       
+        // Use the same angle calculation for police car
+
         policeCarData = {
           position: policeCatchUpPosition,
           angle: mainCarAngle
         };
       } else {
+        
         policeCarData = {
           position: policePosition,
           angle: mainCarAngle
@@ -262,16 +256,8 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         // Calculate position on the curve
         const playerPosition = this.engine.getElapsedPosition(playerCrashTime);
         
-        // Draw the player's car
-        // Set angle for car based on position
-        let angle = -Math.PI / 4; // Default angle (up and right)
-        
-        if(playerPosition.x >= this.angleCutOff) {
-          const angleAdjustment = (this.angleCalcConstant - playerPosition.y) / 333;
-          // Player cars are stationary, so we don't need temporal smoothing,
-          // but we use the same calculation for consistency
-          angle = angle - angleAdjustment;
-        }
+        // Calculate player car angle
+        const angle = this.calculateCarAngle(playerPosition);
         
         // Save canvas state
         ctx.save();
@@ -409,6 +395,33 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     }
 
     this.timer = requestAnimationFrame(() => this.tick()) as any as number;
+  }
+
+  private calculateCarAngle(position: { x: number; y: number }): number {
+    let angle = -Math.PI / 4; // Default angle
+    
+    if (position.x >= this.angleCutOff) {
+      const angleAdjustment = (this.angleCalcConstant - position.y) / 300;
+      const calculatedAngle = angle - angleAdjustment;
+      
+      // Apply smoothing to prevent jiggling at higher multipliers
+      const smoothedAngle = this.lastMainCarAngle * this.angleSmoothingFactor + 
+                           calculatedAngle * (1 - this.angleSmoothingFactor);
+      
+      // Apply smoothed angle with dynamic threshold based on multiplier
+      const maxAngleChange = 0.2 + (this.engine.multiplier / 100);
+      const angleDifference = Math.abs(smoothedAngle - this.lastMainCarAngle);
+      
+      if (angleDifference > maxAngleChange) {
+        // If change is too large, interpolate towards the target angle
+        const direction = smoothedAngle > this.lastMainCarAngle ? 1 : -1;
+        angle = this.lastMainCarAngle + (direction * maxAngleChange);
+      } else {
+        angle = smoothedAngle;
+      }
+    }
+    
+    return angle;
   }
 
   private stepValues(multiplier: number, e: number = 5, n: number = 2): number {
