@@ -5,9 +5,9 @@ export enum CrashEngineState {
   }
   
   export class CrashEngine {
-    public static CrashSpeed = 0.00020; // Multiplier growth rate per millisecond
+    public static CrashSpeed = 0.00018; // Multiplier growth rate per millisecond
     public static PredictingLapse = 300;
-  
+
     public startTime = 0;
     public elapsedTime = 0;
     public finalElapsed = 0;
@@ -25,7 +25,7 @@ export enum CrashEngineState {
     public yAxis = 0;
     public xIncrement = 0;
     public yIncrement = 0;
-    public xAxisMinimum = 1000;
+    public xAxisMinimum = 5000;
     public yAxisMinimum = -1;
     public elapsedOffset = 0;
     public yAxisMultiplier = 1.5;
@@ -37,7 +37,7 @@ export enum CrashEngineState {
     public state = CrashEngineState.Loading;
     public checkForLag = (() => {
       this.lag = true;
-    }).bind(this);
+    });
   
     public onResize(width: number, height: number) {
       this.graphWidth = width;

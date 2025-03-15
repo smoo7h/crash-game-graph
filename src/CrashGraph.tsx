@@ -129,15 +129,15 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
 
     // Draw X-axis with ticks and labels
     const xStepOffset = this.stepValues(this.engine.xAxis, 5, 2);
-    const xStepScale = this.engine.plotWidth / (this.engine.xAxis / xStepOffset);
+    const xStepScale = this.engine.plotWidth / this.engine.xAxis;
 
     for (
-      let step = 1, offset = 0;
-      offset < this.engine.xAxis + xStepOffset && step <= 100;
-      offset += xStepOffset, step++
+      let offset = 0;
+      offset < this.engine.xAxis + xStepOffset && offset / 1000 <= 100;
+      offset += xStepOffset
     ) {
       const seconds = offset / 1000;
-      const positionX = step === 1 ? 4 : step * xStepScale;
+      const positionX = offset * xStepScale;
       const positionY = this.engine.plotHeight + 10;
 
       // Draw tick

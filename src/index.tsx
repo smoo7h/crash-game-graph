@@ -8,6 +8,7 @@ const App = () => (
     <CrashGraph crashPoint={1.1} width={400} height={400} />
     <CrashGraph crashPoint={1.3} width={400} height={400} />
     <CrashGraph crashPoint={1.5} width={400} height={400} />
+    <CrashGraph crashPoint={2} width={400} height={400} />
     <CrashGraph crashPoint={2.5} width={400} height={400} />
     <CrashGraph crashPoint={5.0} width={400} height={400} />
     <CrashGraph crashPoint={10.0} width={400} height={400} />
