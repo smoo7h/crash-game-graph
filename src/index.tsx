@@ -3,7 +3,13 @@ import { createRoot } from "react-dom/client";
 import { CrashGraph } from "./CrashGraph";
 
 const App = () => (
-  <div>
+  <div style={{ 
+    backgroundColor: '#1a1a1a', 
+    minHeight: '100vh',
+    color: 'grey',
+    margin: 0,
+    padding: '20px'
+  }}>
     <h1>Crash Game Graph</h1>
    
     {/* Example with players */}

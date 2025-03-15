@@ -437,7 +437,6 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       }else{
         if(this.sirenToggleInterval > 50){
           this.sirenToggleInterval = this.sirenToggleInterval - 0.1;
-          console.log(this.sirenToggleInterval);
         } 
       }
      
