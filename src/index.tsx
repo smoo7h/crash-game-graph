@@ -1,19 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import * as React from "react";
+import { createRoot } from "react-dom/client";
+import { CrashGraph } from "./CrashGraph";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const App = () => (
+  <div>
+    <h1>Crash Game Graph</h1>
+    <CrashGraph crashPoint={1.2} width={600} height={400} />
+    <CrashGraph crashPoint={2.5} width={600} height={400} />
+    <CrashGraph crashPoint={5.0} width={600} height={400} />
+    <CrashGraph crashPoint={10.0} width={600} height={400} />
+  </div>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
