@@ -15,33 +15,39 @@ The project is in an enhanced state with player visualization features:
 - Updated demo examples with player scenarios
 
 ## Active Work
-The project now supports player visualization in crash scenarios:
-- Player data integration through props interface
-- Random car assignment from available assets
-- Conditional rendering based on crash points
-- Real-time animation with player position tracking:
+The project now features a police chase mechanic alongside player visualization:
+- Police car follows main car with 1-second delay
+- Police maintains exact trajectory of main car
+- Consistent layering with police car on top
+- Real-time animation with advanced tracking:
   - Original speed for multipliers under 5x
   - Accelerated speed for multipliers over 5x
-  - Players appear when multiplier reaches their crash point
+  - Police car follows crash trajectory
 
 ## Current Focus Areas
-1. **Player Integration**
+1. **Police Chase Integration**
+   - Police car appears 1 second after start
+   - Follows exact trajectory of main car
+   - Maintains consistent 1-second delay
+   - Proper handling of crash scenarios
+
+2. **Player Integration**
    - Dynamic player data handling
    - Random car image assignment
    - Position calculation on curve
    - Visibility control based on current multiplier
 
-2. **Visualization**
-   - Player car rendering with proper rotation
+3. **Visualization**
+   - Police car always renders on top layer
+   - Proper car rotation on curves
    - Name label positioning and readability
-   - Background handling for text clarity
    - Purple curve rendering with dynamic scaling
 
-3. **Component Integration**
-   - Player props interface
-   - Multiple instance handling with player support
+4. **Component Integration**
+   - Police car state management
+   - Multiple instance handling with police support
    - Memory management for car images
-   - Efficient player data updates
+   - Efficient position tracking and updates
 
 ## Active Decisions
 

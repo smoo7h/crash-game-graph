@@ -38,7 +38,8 @@
      - Standard speed (0.00018) for < 5x multipliers
      - Accelerated speed (0.00036) for > 5x multipliers
    - Player visualization with cars and names
-   - Conditional player display based on multiplier
+   - Police chase mechanics with 1-second delay
+   - Conditional display based on game state
 
 2. **Multiple Instances**
    - Independent crash points
@@ -46,15 +47,16 @@
    - Separate state management
    - Individual canvas contexts
    - Per-instance player tracking
-   - Independent car image management
+   - Independent car and police management
 
 3. **Performance**
    - 60 FPS target maintained
    - Efficient canvas updates
    - Memory leak prevention
    - Resource management
-   - Optimized player rendering
-   - Efficient car image loading
+   - Layer-aware rendering
+   - Optimized trajectory calculations
+   - Efficient image asset loading
 
 ## Known Issues
 None currently identified.
@@ -65,6 +67,7 @@ None currently identified.
 1. **Performance Optimization**
    - [x] Dual-speed rendering implementation
    - [x] Animation speed optimization
+   - [x] Police car trajectory matching
    - [ ] Memory usage analysis
    - [ ] Animation frame synchronization
 

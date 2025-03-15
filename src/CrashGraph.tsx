@@ -49,10 +49,8 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     const canvas = this.canvasReference.current;
     if (!canvas) return;
     
-    // Load main car image
-    const carNumber = Math.floor(Math.random() * 7);
    
-    this.carImage.src = `/assets/car${carNumber}.png`;
+    this.carImage.src = `/assets/tonicar.png`;
     this.carImage.onload = () => {
       this.carLoaded = true;
       this.carWidth = this.originalCarWidth * this.carScale;
@@ -134,125 +132,71 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     ctx.quadraticCurveTo(b.x, b.y, a.x, a.y);
     ctx.stroke();
     
-    // Draw car at the front of the curve
-    if (this.carLoaded) {
-      // Get current position (front of curve)
-      const currentPoint = a;
-      
-      // Always use a fixed angle pointing up and to the right
-      // -45 degrees or -Math.PI/4 (-0.785 radians)
-      let angle = -Math.PI / 4;
-      
-      if(currentPoint.x >= this.angleCutOff) {
-        // Rotate car to the right
-        const angleAdjustment = (this.angleCalcConstant - currentPoint.y) / 333;
-        angle = angle - angleAdjustment;
-      }
+    // Calculate main car position and angle
+    let mainCarAngle = -Math.PI / 4;
+    const currentPoint = a;
+    
+    if(currentPoint.x >= this.angleCutOff) {
+      const angleAdjustment = (this.angleCalcConstant - currentPoint.y) / 333;
+      mainCarAngle = mainCarAngle - angleAdjustment;
+    }
+
+    // Calculate police car position and angle
+    let policeCarData = null;
+    if (this.policeLoaded && this.policeVisible) {
+      const policeElapsedTime = Math.max(0, this.engine.elapsedTime - 1000);
+      const policePosition = this.engine.getElapsedPosition(policeElapsedTime);
      
-      // Save the position for police car history
+      
+      if (this.engine.state === CrashEngineState.Over) {
+        const timeSinceGameOver = Date.now() - (this.engine.startTime + this.engine.finalElapsed);
+        const policeTimeAfterCrash = Math.max(0, policeElapsedTime + timeSinceGameOver);
+        const targetTime = Math.min(policeTimeAfterCrash, this.engine.finalElapsed);
+        
+        const policeCatchUpPosition = this.engine.getElapsedPosition(targetTime);
+      
+        policeCarData = {
+          position: policeCatchUpPosition,
+          angle: mainCarAngle
+        };
+      } else {
+        policeCarData = {
+          position: policePosition,
+          angle: mainCarAngle
+        };
+      }
+    }
+    
+    // Draw the main car
+    if (this.carLoaded) {
+      ctx.save();
+      ctx.translate(currentPoint.x, currentPoint.y);
+      ctx.rotate(mainCarAngle);
+      ctx.drawImage(
+        this.carImage,
+        -this.carWidth / 2,
+        -this.carHeight / 2,
+        this.carWidth,
+        this.carHeight
+      );
+      ctx.restore();
+    }
+    
+    // Save the main car position for any needed calculations
+    if (this.carLoaded) {
       this.positionHistory.push({
         time: this.engine.elapsedTime,
         x: currentPoint.x,
         y: currentPoint.y,
-        angle: angle
+        angle: mainCarAngle
       });
       
-      // Limit history size to prevent memory issues
       if (this.positionHistory.length > 1000) {
         this.positionHistory.shift();
       }
-      
-      // Save current canvas state
-      ctx.save();
-      
-      // Translate to current position (front of the curve)
-      ctx.translate(currentPoint.x, currentPoint.y);
-      
-      // Rotate canvas to fixed angle (up and right)
-      ctx.rotate(angle);
-
-      // Draw the car image
-      ctx.drawImage(
-        this.carImage,
-        -this.carWidth / 2,  // Center horizontally
-        -this.carHeight / 2, // Center vertically
-        this.carWidth,
-        this.carHeight
-      );
-      
-      // Restore canvas state
-      ctx.restore();
     }
     
-    // Draw police car
-    if (this.policeLoaded && this.policeVisible) {
-      // Calculate police car position using exact same positions as main car but 1 second behind
-      const policeElapsedTime = Math.max(0, this.engine.elapsedTime - 1000);
-      
-      // Get the position directly from the engine, just like we do for the main car
-      // This ensures the exact same trajectory calculation logic is used
-      const policePosition = this.engine.getElapsedPosition(policeElapsedTime);
-      
-      // Calculate the angle using the same logic as the main car
-      let policeAngle = -Math.PI / 4;
-      
-      if (policePosition.x >= this.angleCutOff) {
-        const angleAdjustment = (this.angleCalcConstant - policePosition.y) / 333;
-        policeAngle = policeAngle - angleAdjustment;
-      }
-      
-      // If game is over, police continues using the engine's position calculation
-      if (this.engine.state === CrashEngineState.Over) {
-        const timeSinceGameOver = Date.now() - (this.engine.startTime + this.engine.finalElapsed);
-        const policeTimeAfterCrash = Math.max(0, policeElapsedTime + timeSinceGameOver);
-        
-        // Only update position if police hasn't reached the crash point yet
-        if (policeTimeAfterCrash < this.engine.finalElapsed) {
-          // The police is still approaching the crash point
-          const policeCatchUpPosition = this.engine.getElapsedPosition(policeTimeAfterCrash);
-          
-          // Draw police car at calculated position
-          ctx.save();
-          ctx.translate(policeCatchUpPosition.x, policeCatchUpPosition.y);
-          
-          // Calculate angle
-          let catchUpAngle = -Math.PI / 4;
-          if (policeCatchUpPosition.x >= this.angleCutOff) {
-            const angleAdjustment = (this.angleCalcConstant - policeCatchUpPosition.y) / 333;
-            catchUpAngle = catchUpAngle - angleAdjustment;
-          }
-          
-          ctx.rotate(catchUpAngle);
-          
-          ctx.drawImage(
-            this.policeImage,
-            -this.carWidth / 2,
-            -this.carHeight / 2,
-            this.carWidth,
-            this.carHeight
-          );
-          
-          ctx.restore();
-        }
-      } else {
-        // Normal gameplay - draw police car at calculated position
-        ctx.save();
-        ctx.translate(policePosition.x, policePosition.y);
-        ctx.rotate(policeAngle);
-        
-        ctx.drawImage(
-          this.policeImage,
-          -this.carWidth / 2,
-          -this.carHeight / 2,
-          this.carWidth,
-          this.carHeight
-        );
-        
-        ctx.restore();
-      }
-    }
-    
-    // Draw player cars and names at their crash points
+    // Draw player cars and names at their crash points (before police car)
     if (this.props.players && this.props.players.length > 0) {
       this.props.players.forEach(player => {
         // Skip players whose crash point is greater than the game's crash point
@@ -337,6 +281,21 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         ctx.restore();
       });
     }
+    
+    // Draw police car last (on top of everything)
+    if (policeCarData && this.policeLoaded) {
+      ctx.save();
+      ctx.translate(policeCarData.position.x, policeCarData.position.y);
+      ctx.rotate(policeCarData.angle);
+      ctx.drawImage(
+        this.policeImage,
+        -this.carWidth / 2,
+        -this.carHeight / 2,
+        this.carWidth,
+        this.carHeight
+      );
+      ctx.restore();
+    }
 
     // Draw the current multiplier label
     ctx.font = "bold 50px sans-serif";
@@ -357,17 +316,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     // Draw Y-axis with ticks and labels
     const yStepOffset = this.stepValues(this.engine.multiplier || 1);
     const yStepScale = this.engine.plotHeight / this.engine.yAxis;
-    const ySubStepOffset = yStepOffset * yStepScale;
-    const ySubSteps =
-      Math.max(
-        2,
-        Math.min(16, ~~(ySubStepOffset / Math.max(3, this.engine.yAxis / yStepOffset)))
-      ) +
-      (Math.max(
-        2,
-        Math.min(16, ~~(ySubStepOffset / Math.max(3, this.engine.yAxis / yStepOffset)))
-      ) % 2);
-
+ 
     for (
       let offset = yStepOffset, step = 0;
       offset < this.engine.yAxis + yStepOffset && step <= 100;

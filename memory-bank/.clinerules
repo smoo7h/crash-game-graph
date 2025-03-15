@@ -25,12 +25,14 @@
 - Double quotes for strings
 - Interface-first approach for type definitions
 - Clear separation between logic and presentation
+- Consistent layer ordering for overlapping elements
 
 ### Canvas Usage
 - Canvas cleared before each frame
 - Quadratic curves for smooth animations
 - Purple curve color (#853278)
 - Light background (#e2e2e2)
+- Explicit layer management for car overlays
 
 ### Performance Rules
 - Use requestAnimationFrame for animations
@@ -78,13 +80,17 @@
    ```
 
 ## Project Constants
-- CrashSpeed: 0.00018 (multiplier growth rate)
+- BaseCrashSpeed: 0.00018 (base multiplier growth rate)
+- AcceleratedCrashSpeed: 0.00036 (accelerated rate after 5x)
 - PredictingLapse: 300ms
 - Default graph dimensions: 400x400
 - Plot padding: X=50, Y=40
+- Police delay: 1000ms (1 second)
 
 ## Integration Notes
 - Components expect crash point as required prop
 - Optional width/height props for customization
 - Canvas styling through style prop
 - Clean unmount required for resource cleanup
+- Asset preloading for smooth animations
+- Police car appears automatically with 1s delay

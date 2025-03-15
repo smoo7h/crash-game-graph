@@ -25,7 +25,11 @@ flowchart TD
   - Dual-speed rendering system for optimized performance
   - Transition point at 5x multiplier
   - Base speed for < 5x, accelerated speed for > 5x
+  - Position and timing calculations for main car and police
 - **CrashGraph**: React component for visualization
+  - Police car follows main car with 1s delay
+  - Maintains exact trajectory matching
+  - Renders police car on top layer
 - Clear separation of concerns between business logic and presentation
 
 ### 2. State Management
@@ -43,9 +47,11 @@ stateDiagram-v2
 ```mermaid
 flowchart LR
     A[RequestFrame] --> B[Calculate State]
-    B --> C[Render Frame]
-    C --> D[Update Canvas]
-    D --> A
+    B --> C[Calculate Positions]
+    C --> D[Update Police]
+    D --> E[Render Frame]
+    E --> F[Update Canvas]
+    F --> A
 ```
 - Uses requestAnimationFrame for optimal performance
 - Continuous rendering loop while component is mounted
@@ -58,20 +64,25 @@ flowchart LR
   - Base growth rate (0.00018) until 5x
   - Accelerated growth rate (0.00036) after 5x
 - Smooth transition handling at 5x point
-- Precise timing management
+- Precise timing management for main car and police
 - Lag detection and compensation
+- Position tracking and trajectory replication
 
 ### 2. Rendering System
 - Canvas-based drawing
 - Quadratic curve interpolation
 - Dynamic axis scaling and labeling
 - Responsive to dimension changes
+- Layer management for car overlaps
+- Police car animation handling
 
 ### 3. Component Integration
 - Props-based configuration
 - Self-contained animation loop
 - Clean mount/unmount lifecycle
 - Multiple instance support
+- Police car state management
+- Image resource handling
 
 ## Error Handling
 1. **Infinite Payout Protection**

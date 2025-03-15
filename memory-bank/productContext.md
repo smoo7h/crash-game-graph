@@ -10,12 +10,14 @@ The Crash Game Graph Control provides a crucial visual component for crash-style
    - Helps players understand game progression
    - Displays player crash points with cars and names
    - Shows player outcomes as they occur
+   - Features police chase for added visual engagement
 
 2. **Multi-instance Display**
    - Allows comparison of different crash scenarios
    - Demonstrates how different crash points affect curve behavior
    - Enables side-by-side analysis of game mechanics
    - Shows multiple player scenarios simultaneously
+   - Each instance has independent police chase mechanics
 
 3. **Clear Data Representation**
    - Dynamic axis scaling for different multiplier ranges
@@ -29,16 +31,19 @@ The Crash Game Graph Control provides a crucial visual component for crash-style
    - Clear visual representation of multiplier progression
    - Easy-to-read axis labels and values
    - Smooth animations for natural progression feeling
+   - Police chase adds visual interest and depth
 
 2. **Performance**
    - Consistent 60 FPS animation
    - No visual lag or stuttering
    - Responsive to window/container size changes
+   - Smooth police car following mechanics
 
 3. **Clarity**
    - Purple curve for good visibility against light background
    - Bold multiplier display in center of graph
    - Clear tick marks and value labels
+   - Police car always visible on top layer
 
 ## Integration Context
 - Designed to be embedded in larger game applications

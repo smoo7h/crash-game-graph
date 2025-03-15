@@ -8,11 +8,13 @@ A React TypeScript application that provides a visual representation of crash ga
    - Core logic for crash game calculations
    - Handles state management and multiplier calculations
    - Manages timing and animation state
+   - Provides position calculations for cars
 
 2. **CrashGraph** (src/CrashGraph.tsx)
    - React component for rendering crash graphs
    - Uses HTML Canvas for drawing
    - Implements real-time animation and visual feedback
+   - Manages police chase mechanics and overlays
 
 ## Technical Requirements
 - React 18.2.0
@@ -26,9 +28,12 @@ A React TypeScript application that provides a visual representation of crash ga
 2. Support multiple simultaneous graph instances
 3. Maintain smooth animations and accurate timing
 4. Enable customizable crash points and graph dimensions
+5. Enhance visual engagement through police chase mechanics
 
 ## Implementation Details
 - Uses requestAnimationFrame for smooth animations
 - Implements quadratic curve rendering for multiplier visualization
 - Provides dynamic axis scaling and labeling
 - Supports customizable graph dimensions and crash points
+- Features police car with exact trajectory following
+- Maintains consistent layer ordering for overlapping elements
