@@ -7,9 +7,19 @@
 - Functional components are used for simpler presentational cases
 - TypeScript interfaces are used for props and state definitions
 - Complex components use sub-interfaces for specialized data (e.g., PlayerData)
+- Core configuration through dedicated interfaces
+
+### Interface Architecture
+- CrashEngineConfig defines core engine settings
+- GraphDimensions manages layout calculations
+- Position interface for coordinate handling
+- Clear interface hierarchies for configuration
+- Interface-first approach to type safety
 
 ### State Management
 - CrashEngine handles all game state and calculations
+- Private fields with public getter methods
+- Protected state access through defined interfaces
 - React components handle UI state and rendering
 - Player state managed within CrashGraph component
 - No global state management required
@@ -18,6 +28,8 @@
 - Source files in src/ directory
 - Memory bank files in memory-bank/ directory
 - Public assets in public/ directory
+- Interface definitions at top of files
+- Logical grouping of related methods
 
 ### Code Style
 - TypeScript strict mode enabled
@@ -26,6 +38,7 @@
 - Interface-first approach for type definitions
 - Clear separation between logic and presentation
 - Consistent layer ordering for overlapping elements
+- Encapsulated state with getter methods
 
 ### Canvas Usage
 - Canvas cleared before each frame
@@ -33,64 +46,90 @@
 - Purple curve color (#853278)
 - Light background (#e2e2e2)
 - Explicit layer management for car overlays
+- Type-safe dimension handling
 
 ### Performance Rules
 - Use requestAnimationFrame for animations
 - Clear timeouts and animation frames on unmount
 - Maintain single canvas context reference
 - Optimize curve calculations
+- Efficient getter/setter patterns
+- Protected state access optimization
 
 ### Error Handling
 - Check for infinite values in calculations
 - Validate crash points
 - Clean up resources on errors
 - Maintain stable state transitions
+- Type-safe coordinate handling
+- Protected state mutation
 
 ## User Preferences
 - Multiple graph instances preferred for comparison
 - Visual feedback through smooth animations
 - Clear numeric display of current multiplier
 - Easy-to-read axis labels
+- Consistent state access patterns
 
 ## Critical Paths
-1. Crash Point Calculation
+1. Crash Point Configuration
    ```typescript
-   setCrashPoint(crashPoint: number) {
-     this.crashPoint = crashPoint;
-     this.crashTime = Math.log(crashPoint) / CrashEngine.CrashSpeed;
+   interface CrashEngineConfig {
+     baseCrashSpeed: number;
+     acceleratedCrashSpeed: number;
+     transitionPoint: number;
+     predictingLapse: number;
    }
    ```
 
-2. Multiplier Calculation
+2. Dimension Management
    ```typescript
-   getElapsedPayout(elapsedTime: number) {
-     const payout = Math.pow(Math.E, CrashEngine.CrashSpeed * elapsedTime);
-     if (!isFinite(payout)) throw new Error("Infinite payout");
-     return Math.max(payout, 1);
+   interface GraphDimensions {
+     width: number;
+     height: number;
+     plotOffsetX: number;
+     plotOffsetY: number;
+     plotWidth: number;
+     plotHeight: number;
    }
    ```
 
-3. Animation Loop
+3. Position Handling
    ```typescript
-   tick() {
-     this.engine.tick();
-     // Update canvas
-     requestAnimationFrame(() => this.tick());
+   interface Position {
+     x: number;
+     y: number;
+   }
+   ```
+
+4. State Access Pattern
+   ```typescript
+   // Private field with public getter
+   private multiplier = 1;
+   public getMultiplier(): number {
+     return this.multiplier;
    }
    ```
 
 ## Project Constants
 - BaseCrashSpeed: 0.00018 (base multiplier growth rate)
 - AcceleratedCrashSpeed: 0.00036 (accelerated rate after 5x)
+- TransitionPoint: 5 (acceleration threshold)
 - PredictingLapse: 300ms
-- Default graph dimensions: 400x400
+- DefaultXAxisMinimum: 5000
+- DefaultYAxisMinimum: -1
+- DefaultYAxisMultiplier: 1.5
 - Plot padding: X=50, Y=40
 - Police delay: 1000ms (1 second)
 
 ## Integration Notes
 - Components expect crash point as required prop
+- Interface-driven configuration required
+- Protected state access through getters
 - Optional width/height props for customization
 - Canvas styling through style prop
 - Clean unmount required for resource cleanup
 - Asset preloading for smooth animations
 - Police car appears automatically with 1s delay
+- Type-safe coordinate handling required
+- Getter-based state access pattern

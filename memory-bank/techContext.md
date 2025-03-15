@@ -54,6 +54,51 @@ public/
       └── car6.png
 ```
 
+## Interface Definitions
+
+### Core Configuration Types
+```typescript
+interface CrashEngineConfig {
+  baseCrashSpeed: number;        // Base multiplier growth rate
+  acceleratedCrashSpeed: number; // Accelerated growth rate
+  transitionPoint: number;       // Point at which acceleration kicks in
+  predictingLapse: number;       // Lag prediction window
+  defaultXAxisMinimum: number;   // Minimum X-axis value
+  defaultYAxisMinimum: number;   // Minimum Y-axis value
+  defaultYAxisMultiplier: number;// Default Y-axis multiplier
+}
+
+interface GraphDimensions {
+  width: number;        // Total graph width
+  height: number;       // Total graph height
+  plotOffsetX: number; // X-axis offset
+  plotOffsetY: number; // Y-axis offset
+  plotWidth: number;   // Actual plotting area width
+  plotHeight: number;  // Actual plotting area height
+}
+
+interface Position {
+  x: number;  // X coordinate
+  y: number;  // Y coordinate
+}
+```
+
+### Component Props
+```typescript
+interface CrashGraphProps {
+  crashPoint: number;          // Crash multiplier value
+  width?: number;             // Canvas width
+  height?: number;            // Canvas height
+  players?: PlayerData[];     // Player information
+  overlayColor?: string;      // Overlay color
+}
+
+interface PlayerData {
+  name: string;
+  crashPoint: number;
+}
+```
+
 ## Technical Requirements
 
 ### Browser Support
@@ -77,6 +122,7 @@ public/
 - Smooth curve rendering
 - Efficient canvas updates
 - Minimal memory footprint
+- Optimized getter/setter access
 
 ## Development Setup
 
@@ -95,26 +141,41 @@ public/
 - DOM and ES6+ lib support
 - React JSX support
 - Module resolution: Node
+- Interface-driven development
+- Private field protection
 
-## Technical Constraints
+## Technical Implementation
 
 ### Canvas Rendering
 - Uses HTML5 Canvas API
 - 2D context for drawing
 - Manual frame management
 - Quadratic curve interpolation
+- Type-safe dimension handling
 
 ### State Management
 - Class-based state handling
 - Enum-based state machine
+- Protected internal state
+- Getter-based access patterns
+- Interface-driven configuration
 - Time-based calculations
 - Lag compensation system
+
+### Engine Architecture
+- Private field encapsulation
+- Public getter methods
+- Interface-driven configuration
+- Type-safe position tracking
+- Protected state management
+- Efficient property access
 
 ### Testing Infrastructure
 - Jest for unit testing
 - React Testing Library
 - DOM testing utilities
 - User event simulation
+- Interface mocking support
 
 ## Build Process
 - Create React App based
@@ -122,3 +183,5 @@ public/
 - Asset optimization
 - Development hot reload
 - Production minification
+- Type checking
+- Interface validation

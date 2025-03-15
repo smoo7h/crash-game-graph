@@ -112,7 +112,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
 
     this.engine.onResize(canvas.width, canvas.height);
     this.engine.setCrashPoint(this.props.crashPoint);
-    this.engine.startTime = Date.now();
+    this.engine.setStartTime(Date.now());
     this.engine.state = CrashEngineState.Active;
     this.timer = requestAnimationFrame(() => this.tick()) as any as number;
   }
@@ -142,7 +142,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    ctx.clearRect(0, 0, this.engine.graphWidth, this.engine.graphHeight);
+    ctx.clearRect(0, 0, this.engine.getGraphWidth(), this.engine.getGraphHeight());
 
     // Draw background image
     if (this.backgroundLoaded) {
@@ -165,9 +165,9 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     ctx.beginPath();
     ctx.strokeStyle = "#853278"; // Purple curve
     ctx.lineWidth = 2;
-    ctx.moveTo(0, this.engine.plotHeight);
-    const a = this.engine.getElapsedPosition(this.engine.elapsedTime);
-    const b = this.engine.getElapsedPosition(this.engine.elapsedTime / 2);
+    ctx.moveTo(0, this.engine.getPlotHeight());
+    const a = this.engine.getElapsedPosition(this.engine.getElapsedTime());
+    const b = this.engine.getElapsedPosition(this.engine.getElapsedTime() / 2);
     ctx.quadraticCurveTo(b.x, b.y, a.x, a.y);
     ctx.stroke();
     
@@ -181,14 +181,14 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     // Calculate police car position and angle
     let policeCarData = null;
     if (this.policeLoaded && this.policeVisible) {
-      const policeElapsedTime = Math.max(0, this.engine.elapsedTime - 1000);
+      const policeElapsedTime = Math.max(0, this.engine.getElapsedTime() - 1000);
       const policePosition = this.engine.getElapsedPosition(policeElapsedTime);
      
       
       if (this.engine.state === CrashEngineState.Over) {
-        const timeSinceGameOver = Date.now() - (this.engine.startTime + this.engine.finalElapsed);
+        const timeSinceGameOver = Date.now() - (this.engine.getStartTime() + this.engine.getFinalElapsed());
         const policeTimeAfterCrash = Math.max(0, policeElapsedTime + timeSinceGameOver);
-        const targetTime = Math.min(policeTimeAfterCrash, this.engine.finalElapsed);
+        const targetTime = Math.min(policeTimeAfterCrash, this.engine.getFinalElapsed());
         
         const policeCatchUpPosition = this.engine.getElapsedPosition(targetTime);
       
@@ -225,7 +225,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     // Save the main car position for any needed calculations
     if (this.carLoaded) {
       this.positionHistory.push({
-        time: this.engine.elapsedTime,
+        time: this.engine.getElapsedTime(),
         x: currentPoint.x,
         y: currentPoint.y,
         angle: mainCarAngle
@@ -245,7 +245,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         }
         
         // Only show players whose crash point has been reached by the current multiplier
-        if (this.engine.multiplier < player.crashPoint) {
+        if (this.engine.getMultiplier() < player.crashPoint) {
           return;
         }
         
@@ -358,12 +358,12 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     // Draw the current multiplier label
     ctx.font = "bold 50px sans-serif";
     ctx.fillStyle = "#FF6EC7"; // Florescent pink
-    const labelText = this.engine.multiplier.toFixed(2) + "x";
+    const labelText = this.engine.getMultiplier().toFixed(2) + "x";
     const textSize = ctx.measureText(labelText);
     ctx.fillText(
       labelText,
-      this.engine.plotWidth / 2 - textSize.width / 2,
-      this.engine.plotHeight / 2 -
+      this.engine.getPlotWidth() / 2 - textSize.width / 2,
+      this.engine.getPlotHeight() / 2 -
         (textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent) / 2
     );
 
@@ -372,20 +372,20 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     // ctx.strokeStyle = "#777";
 
     // Draw Y-axis with ticks and labels
-    const yStepOffset = this.stepValues(this.engine.multiplier || 1);
-    const yStepScale = this.engine.plotHeight / this.engine.yAxis;
+    const yStepOffset = this.stepValues(this.engine.getMultiplier() || 1);
+    const yStepScale = this.engine.getPlotHeight() / this.engine.getYAxis();
  
     for (
       let offset = yStepOffset, step = 0;
-      offset < this.engine.yAxis + yStepOffset && step <= 100;
+      offset < this.engine.getYAxis() + yStepOffset && step <= 100;
       offset += yStepOffset, step++
     ) {
-      const positionX = 0.5 + ~~this.engine.plotWidth + 15;
-      const positionY = this.engine.plotHeight - offset * yStepScale;
+      const positionX = 0.5 + ~~this.engine.getPlotWidth() + 15;
+      const positionY = this.engine.getPlotHeight() - offset * yStepScale;
 
       // Draw label
       const yLabelText =
-        this.engine.getYMultiplier(positionY).toFixed(this.engine.multiplier > 2 ? 0 : 1) +
+        this.engine.getYMultiplier(positionY).toFixed(this.engine.getMultiplier() > 2 ? 0 : 1) +
         "x";
       const yTextSize = ctx.measureText(yLabelText);
       ctx.fillText(
@@ -397,17 +397,17 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     }
 
     // Draw X-axis with ticks and labels
-    const xStepOffset = this.stepValues(this.engine.xAxis, 5, 2);
-    const xStepScale = this.engine.plotWidth / this.engine.xAxis;
+    const xStepOffset = this.stepValues(this.engine.getXAxis(), 5, 2);
+    const xStepScale = this.engine.getPlotWidth() / this.engine.getXAxis();
 
     for (
       let offset = 0;
-      offset < this.engine.xAxis + xStepOffset && offset / 1000 <= 100;
+      offset < this.engine.getXAxis() + xStepOffset && offset / 1000 <= 100;
       offset += xStepOffset
     ) {
       const seconds = offset / 1000;
       const positionX = offset * xStepScale;
-      const positionY = this.engine.plotHeight + 10;
+      const positionY = this.engine.getPlotHeight() + 10;
 
       // Draw tick
       ctx.strokeStyle = "#FF6EC7";
@@ -449,7 +449,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
                            calculatedAngle * (1 - this.angleSmoothingFactor);
       
       // Apply smoothed angle with dynamic threshold based on multiplier
-      const maxAngleChange = 0.2 + (this.engine.multiplier / 100);
+      const maxAngleChange = 0.2 + (this.engine.getMultiplier() / 100);
       const angleDifference = Math.abs(smoothedAngle - this.lastMainCarAngle);
       
       if (angleDifference > maxAngleChange) {
