@@ -42,6 +42,12 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private policeTimer: number | null = null;
   private positionHistory: Array<{time: number, x: number, y: number, angle: number}> = [];
   
+  // Siren animation properties
+  private sirenState = false;
+  private sirenLastToggle = 0;
+  private readonly sirenRadius = 3;
+  private sirenToggleInterval = 400; // Toggle every 500ms
+  
   // Player cars
   private playerCars: Map<string, { image: HTMLImageElement, loaded: boolean }> = new Map();
   
@@ -322,6 +328,30 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         this.carWidth,
         this.carHeight
       );
+
+      // Draw siren lights
+      const currentTime = Date.now();
+      if (currentTime - this.sirenLastToggle >= this.sirenToggleInterval) {
+        this.sirenState = !this.sirenState;
+        this.sirenLastToggle = currentTime;
+      }
+
+      // Position siren lights at the top center of the police car
+      const yOffset = -this.carHeight / 2 - this.sirenRadius + 3;
+      const xOffset = this.sirenRadius * 2;
+
+      // Draw red siren (left)
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255, 0, 0, ${this.sirenState ? 1 : 0.2})`;
+      ctx.arc(-xOffset, yOffset, this.sirenRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw blue siren (right)
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(0, 0, 255, ${this.sirenState ? 0.2 : 1})`;
+      ctx.arc((-xOffset - 4), yOffset, this.sirenRadius, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
     }
 
@@ -401,6 +431,17 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     let angle = -Math.PI / 4; // Default angle
     
     if (position.x >= this.angleCutOff) {
+      
+      if(this.sirenToggleInterval === 400){
+        this.sirenToggleInterval = 200; // Toggle every 200ms
+      }else{
+        if(this.sirenToggleInterval > 50){
+          this.sirenToggleInterval = this.sirenToggleInterval - 0.1;
+          console.log(this.sirenToggleInterval);
+        } 
+      }
+     
+
       const angleAdjustment = (this.angleCalcConstant - position.y) / 300;
       const calculatedAngle = angle - angleAdjustment;
       

@@ -34,6 +34,20 @@ const App = () => (
         { name: "Grace", crashPoint: 5.5 } // This won't show (exceeds game's crash point)
       ]}
     />
+
+<CrashGraph 
+      crashPoint={80} 
+      width={400} 
+      height={400}
+      overlayColor="rgba(0, 0, 0, 0.5)"  // Dark overlay
+      players={[
+        { name: "Henry", crashPoint: 2.1 },
+        { name: "Ivy", crashPoint: 4.3 },
+        { name: "Rise", crashPoint: 2 },
+        { name: "Jack", crashPoint: 69.8 },
+        { name: "Kate", crashPoint: 92.2 }
+      ]}
+    />
     
     <CrashGraph 
       crashPoint={100} 
