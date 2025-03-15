@@ -17,6 +17,9 @@ flowchart TD
 
 ### 1. Engine-View Separation
 - **CrashEngine**: Pure logic class handling calculations and state
+  - Dual-speed rendering system for optimized performance
+  - Transition point at 5x multiplier
+  - Base speed for < 5x, accelerated speed for > 5x
 - **CrashGraph**: React component for visualization
 - Clear separation of concerns between business logic and presentation
 
@@ -46,7 +49,10 @@ flowchart LR
 ## Technical Architecture
 
 ### 1. Calculation System
-- Logarithmic growth for multiplier values
+- Two-phase logarithmic growth for multiplier values:
+  - Base growth rate (0.00018) until 5x
+  - Accelerated growth rate (0.00036) after 5x
+- Smooth transition handling at 5x point
 - Precise timing management
 - Lag detection and compensation
 

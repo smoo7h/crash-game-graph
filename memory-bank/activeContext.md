@@ -16,13 +16,16 @@ The project is in a functional state with core features implemented:
 The project demonstrates different crash scenarios with predefined crash points:
 - 1.1x to 100.0x multiplier range
 - Visual representation using canvas
-- Real-time animation and updates
+- Real-time animation and updates with dual-speed rendering:
+  - Original speed for multipliers under 5x
+  - Accelerated speed for multipliers over 5x
 
 ## Current Focus Areas
 1. **Performance**
-   - Animation smoothness
-   - Canvas rendering efficiency
-   - State management optimization
+   - Dual-speed animation system for optimized rendering
+   - Original speed preserved for <5x multipliers
+   - Accelerated speed for >5x multipliers (2x faster)
+   - Smooth transition at 5x threshold
 
 2. **Visualization**
    - Purple curve rendering
