@@ -8,16 +8,21 @@ The Crash Game Graph Control provides a crucial visual component for crash-style
    - Shows the live progression of multiplier values
    - Provides immediate visual feedback of crash points
    - Helps players understand game progression
+   - Displays player crash points with cars and names
+   - Shows player outcomes as they occur
 
 2. **Multi-instance Display**
    - Allows comparison of different crash scenarios
    - Demonstrates how different crash points affect curve behavior
    - Enables side-by-side analysis of game mechanics
+   - Shows multiple player scenarios simultaneously
 
 3. **Clear Data Representation**
    - Dynamic axis scaling for different multiplier ranges
    - Clear labeling of time and multiplier values
    - Smooth curve animation for better comprehension
+   - Visual player identification through cars and names
+   - Player outcomes appear at correct multiplier points
 
 ## User Experience Goals
 1. **Intuitive Understanding**

@@ -158,6 +158,11 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
           return;
         }
         
+        // Only show players whose crash point has been reached by the current multiplier
+        if (this.engine.multiplier < player.crashPoint) {
+          return;
+        }
+        
         // Get player car data
         const playerCarData = this.playerCars.get(player.name);
         if (!playerCarData || !playerCarData.loaded) {
@@ -269,15 +274,6 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       const positionX = 0.5 + ~~this.engine.plotWidth + 15;
       const positionY = this.engine.plotHeight - offset * yStepScale;
 
-      // Draw tick
-      ctx.strokeStyle = "#444";
-      ctx.lineWidth = this.yTickWidth;
-      ctx.beginPath();
-      ctx.moveTo(positionX - this.yTickWidth, positionY);
-      ctx.lineTo(positionX, positionY);
-      ctx.stroke();
-      ctx.strokeStyle = "#777";
-
       // Draw label
       const yLabelText =
         this.engine.getYMultiplier(positionY).toFixed(this.engine.multiplier > 2 ? 0 : 1) +
@@ -289,16 +285,6 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         positionY + (yTextSize.actualBoundingBoxAscent + yTextSize.actualBoundingBoxDescent) / 2
       );
 
-      // Draw sub-ticks
-      for (let o = 1; o < ySubSteps; o++) {
-        const isMiddleSubStep = o === ySubSteps / 2;
-        const subStepWidth = isMiddleSubStep ? 12 : 7;
-        const subStepPositionY = 0.5 + ~~(positionY + (ySubStepOffset / ySubSteps) * o);
-        ctx.beginPath();
-        ctx.moveTo(positionX - subStepWidth, subStepPositionY);
-        ctx.lineTo(positionX, subStepPositionY);
-        ctx.stroke();
-      }
     }
 
     // Draw X-axis with ticks and labels

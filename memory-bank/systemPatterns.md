@@ -11,6 +11,11 @@ flowchart TD
     E --> F[Loading]
     E --> G[Active]
     E --> H[Over]
+    
+    B --> I[Player Management]
+    I --> J[Car Images]
+    I --> K[Position Calculation]
+    I --> L[Visibility Control]
 ```
 
 ## Core Design Patterns

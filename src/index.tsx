@@ -12,6 +12,7 @@ const App = () => (
       crashPoint={2.0} 
       width={400} 
       height={400}
+     
       players={[
         { name: "Alice", crashPoint: 1.3 },
         { name: "Bob", crashPoint: 1.8 },

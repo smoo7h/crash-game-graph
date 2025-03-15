@@ -37,18 +37,24 @@
    - Smooth animations with optimized speed:
      - Standard speed (0.00018) for < 5x multipliers
      - Accelerated speed (0.00036) for > 5x multipliers
+   - Player visualization with cars and names
+   - Conditional player display based on multiplier
 
 2. **Multiple Instances**
    - Independent crash points
    - Simultaneous animations
    - Separate state management
    - Individual canvas contexts
+   - Per-instance player tracking
+   - Independent car image management
 
 3. **Performance**
    - 60 FPS target maintained
    - Efficient canvas updates
    - Memory leak prevention
    - Resource management
+   - Optimized player rendering
+   - Efficient car image loading
 
 ## Known Issues
 None currently identified.

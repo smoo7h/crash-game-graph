@@ -6,10 +6,12 @@
 - React components are class-based when they need internal state management
 - Functional components are used for simpler presentational cases
 - TypeScript interfaces are used for props and state definitions
+- Complex components use sub-interfaces for specialized data (e.g., PlayerData)
 
 ### State Management
 - CrashEngine handles all game state and calculations
 - React components handle UI state and rendering
+- Player state managed within CrashGraph component
 - No global state management required
 
 ### File Organization

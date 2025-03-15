@@ -37,11 +37,21 @@
 ```
 src/
   ├── CrashEngine.ts     # Core game logic and calculations
-  ├── CrashGraph.tsx     # Graph visualization component
-  ├── index.tsx         # Application entry point
+  ├── CrashGraph.tsx     # Graph visualization component with player support
+  ├── index.tsx         # Application entry point and demo configurations
   ├── react-app-env.d.ts # TypeScript declarations
   ├── reportWebVitals.ts # Performance monitoring
   └── setupTests.ts      # Test configuration
+
+public/
+  └── assets/
+      ├── car0.png      # Player car image assets
+      ├── car1.png
+      ├── car2.png
+      ├── car3.png
+      ├── car4.png
+      ├── car5.png
+      └── car6.png
 ```
 
 ## Technical Requirements

@@ -1,41 +1,47 @@
 # Active Context: Crash Game Graph Control
 
 ## Current Status
-The project is in a functional state with core features implemented:
+The project is in an enhanced state with player visualization features:
 - CrashEngine calculation system
-- CrashGraph visualization component
-- Multiple instance demonstration
+- CrashGraph visualization component with player integration
+- Multiple instance demonstration with player tracking
+- Dynamic car and name display based on crash points
 
 ## Recent Changes
-- Initial project setup with React and TypeScript
-- Implementation of core CrashEngine logic
-- Development of CrashGraph rendering component
-- Integration of multiple graph instances in index.tsx
+- Added player visualization system to CrashGraph
+- Implemented dynamic car image loading for players
+- Added player name display with background for readability
+- Enhanced multiplier tracking to control player visibility
+- Updated demo examples with player scenarios
 
 ## Active Work
-The project demonstrates different crash scenarios with predefined crash points:
-- 1.1x to 100.0x multiplier range
-- Visual representation using canvas
-- Real-time animation and updates with dual-speed rendering:
+The project now supports player visualization in crash scenarios:
+- Player data integration through props interface
+- Random car assignment from available assets
+- Conditional rendering based on crash points
+- Real-time animation with player position tracking:
   - Original speed for multipliers under 5x
   - Accelerated speed for multipliers over 5x
+  - Players appear when multiplier reaches their crash point
 
 ## Current Focus Areas
-1. **Performance**
-   - Dual-speed animation system for optimized rendering
-   - Original speed preserved for <5x multipliers
-   - Accelerated speed for >5x multipliers (2x faster)
-   - Smooth transition at 5x threshold
+1. **Player Integration**
+   - Dynamic player data handling
+   - Random car image assignment
+   - Position calculation on curve
+   - Visibility control based on current multiplier
 
 2. **Visualization**
-   - Purple curve rendering
-   - Dynamic axis scaling
-   - Clear multiplier display
+   - Player car rendering with proper rotation
+   - Name label positioning and readability
+   - Background handling for text clarity
+   - Purple curve rendering with dynamic scaling
 
 3. **Component Integration**
-   - Multiple instance handling
-   - Props-based configuration
-   - Memory management
+   - Player props interface
+   - Multiple instance handling with player support
+   - Memory management for car images
+   - Efficient player data updates
 
 ## Active Decisions
 
