@@ -14,11 +14,28 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private isComponentMounted = false;
   private yTickWidth = 2;
   private xTickWidth = 2;
+  
+  // Car image properties
+  private carImage = new Image();
+  private carLoaded = false;
+  private originalCarWidth = 193;
+  private originalCarHeight = 50;
+  private carScale = 0.25;
+  private carWidth = this.originalCarWidth * this.carScale;
+  private carHeight = this.originalCarHeight * this.carScale;
 
   public componentDidMount() {
     this.isComponentMounted = true;
     const canvas = this.canvasReference.current;
     if (!canvas) return;
+    
+    // Load car image
+    this.carImage.src = "/assets/car1.png";
+    this.carImage.onload = () => {
+      this.carLoaded = true;
+      this.carWidth = this.originalCarWidth * this.carScale;
+      this.carHeight = this.originalCarHeight * this.carScale;
+    };
 
     this.engine.onResize(canvas.width, canvas.height);
     this.engine.setCrashPoint(this.props.crashPoint);
@@ -56,6 +73,51 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     const b = this.engine.getElapsedPosition(this.engine.elapsedTime / 2);
     ctx.quadraticCurveTo(b.x, b.y, a.x, a.y);
     ctx.stroke();
+    
+    // Draw car at the front of the curve
+    if (this.carLoaded) {
+      // Set angle cut-off for car rotation
+      const angleCutOff = 350;
+      const angleCalcConstant = 145;
+      // get the value we need to add to the angle 
+      // (its angleCalcConstant - currentPoint.y ) / 100000
+     
+
+
+      // Get current position (front of curve)
+      const currentPoint = a;
+      
+      // Always use a fixed angle pointing up and to the right
+      // -45 degrees or -Math.PI/4 (-0.785 radians)
+      let angle = -Math.PI / 4;
+      
+      if(currentPoint.x >= angleCutOff) {
+        // Rotate car to the right
+        const angleAdjustment = (angleCalcConstant - currentPoint.y) / 333;
+        angle = angle - angleAdjustment;
+      }
+     
+      // Save current canvas state
+      ctx.save();
+      
+      // Translate to current position (front of the curve)
+      ctx.translate(currentPoint.x, currentPoint.y);
+      
+      // Rotate canvas to fixed angle (up and right)
+      ctx.rotate(angle);
+
+      // Draw the car image
+      ctx.drawImage(
+        this.carImage,
+        -this.carWidth / 2,  // Center horizontally
+        -this.carHeight / 2, // Center vertically
+        this.carWidth,
+        this.carHeight
+      );
+      
+      // Restore canvas state
+      ctx.restore();
+    }
 
     // Draw the current multiplier label
     ctx.font = "bold 50px sans-serif";
