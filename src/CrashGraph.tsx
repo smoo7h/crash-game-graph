@@ -1,10 +1,16 @@
 import * as React from "react";
 import { CrashEngine, CrashEngineState } from "./CrashEngine";
 
+interface PlayerData {
+  name: string;
+  crashPoint: number;
+}
+
 interface CrashGraphProps {
   crashPoint: number; // Multiplier at which the game crashes
   width?: number;     // Canvas width (default: 600)
   height?: number;    // Canvas height (default: 400)
+  players?: PlayerData[]; // Array of players with their crash points
 }
 
 export class CrashGraph extends React.Component<CrashGraphProps> {
@@ -23,19 +29,52 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private carScale = 0.25;
   private carWidth = this.originalCarWidth * this.carScale;
   private carHeight = this.originalCarHeight * this.carScale;
+  
+  // Player cars
+  private playerCars: Map<string, { image: HTMLImageElement, loaded: boolean }> = new Map();
+  
+  // Car rotation constants
+  private readonly angleCutOff = 350;
+  private readonly angleCalcConstant = 145;
 
   public componentDidMount() {
     this.isComponentMounted = true;
     const canvas = this.canvasReference.current;
     if (!canvas) return;
     
-    // Load car image
-    this.carImage.src = "/assets/car1.png";
+    // Load main car image
+    const carNumber = Math.floor(Math.random() * 7);
+   
+    this.carImage.src = `/assets/car${carNumber}.png`;
     this.carImage.onload = () => {
       this.carLoaded = true;
       this.carWidth = this.originalCarWidth * this.carScale;
       this.carHeight = this.originalCarHeight * this.carScale;
     };
+    
+    // Load player car images
+    if (this.props.players && this.props.players.length > 0) {
+      this.props.players.forEach((player, index) => {
+        if (player.crashPoint <= this.props.crashPoint) {
+          const playerCarNumber = Math.floor(Math.random() * 7);
+          const playerCarImage = new Image();
+          playerCarImage.src = `/assets/car${playerCarNumber}.png`;
+          
+          this.playerCars.set(player.name, {
+            image: playerCarImage,
+            loaded: false
+          });
+          
+          playerCarImage.onload = () => {
+            const playerCarData = this.playerCars.get(player.name);
+            if (playerCarData) {
+              playerCarData.loaded = true;
+              this.playerCars.set(player.name, playerCarData);
+            }
+          };
+        }
+      });
+    }
 
     this.engine.onResize(canvas.width, canvas.height);
     this.engine.setCrashPoint(this.props.crashPoint);
@@ -76,14 +115,6 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     
     // Draw car at the front of the curve
     if (this.carLoaded) {
-      // Set angle cut-off for car rotation
-      const angleCutOff = 350;
-      const angleCalcConstant = 145;
-      // get the value we need to add to the angle 
-      // (its angleCalcConstant - currentPoint.y ) / 100000
-     
-
-
       // Get current position (front of curve)
       const currentPoint = a;
       
@@ -91,9 +122,9 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       // -45 degrees or -Math.PI/4 (-0.785 radians)
       let angle = -Math.PI / 4;
       
-      if(currentPoint.x >= angleCutOff) {
+      if(currentPoint.x >= this.angleCutOff) {
         // Rotate car to the right
-        const angleAdjustment = (angleCalcConstant - currentPoint.y) / 333;
+        const angleAdjustment = (this.angleCalcConstant - currentPoint.y) / 333;
         angle = angle - angleAdjustment;
       }
      
@@ -117,6 +148,87 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
       
       // Restore canvas state
       ctx.restore();
+    }
+    
+    // Draw player cars and names at their crash points
+    if (this.props.players && this.props.players.length > 0) {
+      this.props.players.forEach(player => {
+        // Skip players whose crash point is greater than the game's crash point
+        if (player.crashPoint > this.props.crashPoint) {
+          return;
+        }
+        
+        // Get player car data
+        const playerCarData = this.playerCars.get(player.name);
+        if (!playerCarData || !playerCarData.loaded) {
+          return;
+        }
+        
+        // Calculate elapsed time for player's crash point using engine's method
+        // We're using the multiplier elapsed time calculation to get the time for this crash point
+        const playerCrashTime = this.engine.getMultiplierElapsed(player.crashPoint);
+        
+        // Calculate position on the curve
+        const playerPosition = this.engine.getElapsedPosition(playerCrashTime);
+        
+        // Draw the player's car
+        // Set angle for car based on position
+        let angle = -Math.PI / 4; // Default angle (up and right)
+        
+        if(playerPosition.x >= this.angleCutOff) {
+          const angleAdjustment = (this.angleCalcConstant - playerPosition.y) / 333;
+          angle = angle - angleAdjustment;
+        }
+        
+        // Save canvas state
+        ctx.save();
+        
+        // Translate to player's position
+        ctx.translate(playerPosition.x, playerPosition.y);
+        
+        // Rotate canvas for car
+        ctx.rotate(angle);
+        
+        // Draw the player's car
+        ctx.drawImage(
+          playerCarData.image,
+          -this.carWidth / 2,  // Center horizontally
+          -this.carHeight / 2, // Center vertically
+          this.carWidth,
+          this.carHeight
+        );
+        
+        // Restore canvas to draw player name
+        ctx.restore();
+        
+        // Draw player name
+        ctx.save();
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#000000";
+        
+        // Add a background for better readability
+        const textMeasure = ctx.measureText(player.name);
+        const textHeight = textMeasure.actualBoundingBoxAscent + textMeasure.actualBoundingBoxDescent;
+        const padding = 4;
+        
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.fillRect(
+          playerPosition.x - textMeasure.width/2 - padding,
+          playerPosition.y - textHeight - this.carHeight/2 - padding*2,
+          textMeasure.width + padding*2,
+          textHeight + padding*2
+        );
+        
+        // Draw the text
+        ctx.fillStyle = "#000000";
+        ctx.fillText(
+          player.name,
+          playerPosition.x - textMeasure.width/2,
+          playerPosition.y - this.carHeight/2 - padding
+        );
+        
+        ctx.restore();
+      });
     }
 
     // Draw the current multiplier label
