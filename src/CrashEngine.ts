@@ -5,7 +5,7 @@ export enum CrashEngineState {
   }
   
   export class CrashEngine {
-    public static CrashSpeed = 0.00006; // Multiplier growth rate per millisecond
+    public static CrashSpeed = 0.00020; // Multiplier growth rate per millisecond
     public static PredictingLapse = 300;
   
     public startTime = 0;
