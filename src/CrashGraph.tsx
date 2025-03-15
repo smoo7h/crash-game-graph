@@ -48,6 +48,8 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   // Car rotation constants
   private readonly angleCutOff = 350;
   private readonly angleCalcConstant = 145;
+  private lastMainCarAngle = -Math.PI / 4; // Track previous angle for smoothing
+  private readonly angleSmoothingFactor = 0.13333; // Higher = smoother (0.0-1.0)
 
   public componentDidMount() {
     this.isComponentMounted = true;
@@ -169,8 +171,15 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     
     if(currentPoint.x >= this.angleCutOff) {
       const angleAdjustment = (this.angleCalcConstant - currentPoint.y) / 333;
-      mainCarAngle = mainCarAngle - angleAdjustment;
+      const calculatedAngle = mainCarAngle - angleAdjustment;
+      
+      // Apply smoothing to prevent jiggling at higher multipliers
+      mainCarAngle = this.lastMainCarAngle * this.angleSmoothingFactor + 
+                     calculatedAngle * (1 - this.angleSmoothingFactor);
     }
+    
+    // Store current angle for next frame
+    this.lastMainCarAngle = mainCarAngle;
 
     // Calculate police car position and angle
     let policeCarData = null;
@@ -259,6 +268,8 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
         
         if(playerPosition.x >= this.angleCutOff) {
           const angleAdjustment = (this.angleCalcConstant - playerPosition.y) / 333;
+          // Player cars are stationary, so we don't need temporal smoothing,
+          // but we use the same calculation for consistency
           angle = angle - angleAdjustment;
         }
         
