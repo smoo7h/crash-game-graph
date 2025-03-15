@@ -31,7 +31,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
   private carLoaded = false;
   private originalCarWidth = 193;
   private originalCarHeight = 50;
-  private carScale = 0.25;
+  private carScale = 0.3;
   private carWidth = this.originalCarWidth * this.carScale;
   private carHeight = this.originalCarHeight * this.carScale;
   
@@ -68,7 +68,7 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     };
     
     // Load police car image
-    this.policeImage.src = "/assets/police.png";
+    this.policeImage.src = "/assets/police.svg";
     this.policeImage.onload = () => {
       this.policeLoaded = true;
     };
@@ -129,6 +129,10 @@ export class CrashGraph extends React.Component<CrashGraphProps> {
     this.engine.tick();
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Enable high quality image smoothing
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     ctx.clearRect(0, 0, this.engine.graphWidth, this.engine.graphHeight);
 
